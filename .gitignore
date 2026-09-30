@@ -1,0 +1,4 @@
+# Bản scan gốc có thông tin chủ sử dụng đất — không đưa lên repo public
+*.pdf
+assets/scan-*
+__pycache__/
