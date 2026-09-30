@@ -8,9 +8,10 @@ Chạy: python make_siteplan.py  -> ../assets/site-plan.svg
 import math, os
 from coords import P1, P2, area
 
-P2f = list(P2)
-P2f[3] = (921.17, 384.30)   # điểm 4 (scan đọc 1190891.17 — mờ)
-P2f[4] = (896.17, 288.01)   # điểm 5 (scan đọc 1190891.17 — mờ)
+import json
+# P2 đã hiệu chỉnh: mốc 4 = 1190921.17 (điểm giữa cung 3–4–5, R ≈ 275 m); mốc 10, 28 đọc lại theo cột "Cạnh";
+# cung 3→5 đã nội suy 40 đoạn (xem verify_coords.py)
+P2c = [tuple(q) for q in json.load(open(os.path.join(os.path.dirname(__file__), "p2c_local.json")))["P2c"]]
 
 # X = northing (1190xxx), Y = easting (590xxx); lưu phần lẻ
 E0, E1, N0, N1 = 250, 505, 790, 930
@@ -44,12 +45,7 @@ for n in range(800, 930, 20):
     out.append(f'<line class="grid" x1="0" y1="{y:.1f}" x2="{W}" y2="{y:.1f}"/>')
 out.append(f'<text class="gridlbl" x="2" y="{H+16}">lưới 20 m · VN-2000, KTT 105°45′, múi 3°</text>')
 
-# P2 với 2 đoạn cung (3→4→5)
-p = [pt(q) for q in P2f]
-d = f"M{p[0][0]},{p[0][1]} L{p[1][0]},{p[1][1]} L{p[2][0]},{p[2][1]} "
-d += arc_path(P2f[2], P2f[3], 3.1) + " " + arc_path(P2f[3], P2f[4], 9.3) + " "
-d += " ".join(f"L{x},{y}" for x, y in p[5:]) + " Z"
-out.append(f'<path class="p2" d="{d}"/>')
+out.append(f'<polygon class="p2" points="{poly(P2c)}"/>')
 out.append(f'<polygon class="p1" points="{poly(P1)}"/>')
 
 # mương phía nam (song song cạnh 33→40 của P1, lệch ~6 m)
@@ -103,4 +99,4 @@ out.append('</svg>')
 svg = "\n".join(out)
 dst = os.path.join(os.path.dirname(__file__), "..", "assets", "site-plan.svg")
 open(dst, "w", encoding="utf-8").write(svg)
-print("P1 area", round(area(P1), 1), "| P2 polygon", round(area(P2f), 1), "+ 2 cung ≈ 823 m² → ≈ 17.354 m²")
+print("P1 area", round(area(P1), 1), "| P2 (cung thật)", round(area(P2c), 1))

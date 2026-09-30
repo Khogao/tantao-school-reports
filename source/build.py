@@ -14,7 +14,7 @@ C = {"crit": "var(--coral)", "edu": "var(--deep-light)", "build": "var(--teal)",
 
 LEGAL = [
     ("1 · Pháp nhân", [
-        ("Thỏa thuận thành viên, điều lệ, cam kết không vì lợi nhuận", "4 NĐT, luật sư", 1, 1, "doc"),
+        ("Thỏa thuận thành viên, điều lệ, cam kết không vì lợi nhuận", "Nhà đầu tư, luật sư", 1, 1, "doc"),
         ("Đăng ký doanh nghiệp", "Sở Tài chính", 2, 2, "crit"),
     ]),
     ("2 · Thông tin quy hoạch & pháp lý đất", [
@@ -27,11 +27,11 @@ LEGAL = [
         ("Nộp đề xuất; làm việc UBND phường, Sở QH-KT", "Phường, Sở QH-KT", 3, 4, "crit"),
         ("UBND TP có ý kiến chủ trương điều chỉnh", "UBND TP", 4, 4, "ms"),
     ]),
-    ("4 · Điều chỉnh quy hoạch phân khu 1/2000", [
-        ("Lập nhiệm vụ và đồ án điều chỉnh", "Tư vấn QH", 5, 7, "doc"),
-        ("Lấy ý kiến cộng đồng dân cư, cơ quan", "UBND phường", 7, 8, "crit"),
-        ("Thẩm định hồ sơ điều chỉnh", "Sở QH-KT", 8, 9, "crit"),
-        ("Phê duyệt và công bố điều chỉnh QH", "UBND TP", 10, 10, "ms"),
+    ("4 · Điều chỉnh cục bộ quy hoạch phân khu 1/2000", [
+        ("Báo cáo rà soát quy hoạch; lập hồ sơ điều chỉnh cục bộ", "UBND phường, tư vấn QH", 5, 6, "doc"),
+        ("Lấy ý kiến cơ quan (15 ngày) và cộng đồng (20–30 ngày)", "UBND phường", 7, 8, "crit"),
+        ("Ý kiến Sở QH-KT; thẩm định hồ sơ (≈20 ngày)", "Sở QH-KT, phòng chuyên môn", 8, 9, "crit"),
+        ("Phê duyệt (≈10 ngày), công bố (≤15 ngày)", "UBND phường", 10, 10, "ms"),
         ("Cập nhật kế hoạch sử dụng đất hằng năm", "Sở NN&MT", 10, 12, "land"),
     ]),
     ("5 · Quyền sử dụng đất", [
@@ -46,7 +46,7 @@ LEGAL = [
         ("Quyết định chấp thuận chủ trương và nhà đầu tư", "Chủ tịch UBND TP", 14, 14, "ms"),
     ]),
     ("7 · Sau chủ trương", [
-        ("Chuyển mục đích sử dụng đất, cho thuê đất", "Sở NN&MT, UBND TP", 15, 18, "crit"),
+        ("Chuyển mục đích (đất lúa không phải trình HĐND), cho thuê đất", "Sở NN&MT, UBND TP", 15, 18, "crit"),
         ("Xác định tiền thuê đất, ưu đãi; ký hợp đồng thuê", "Sở NN&MT, Thuế", 17, 19, "land"),
         ("Cấp giấy chứng nhận quyền sử dụng đất", "VPĐKĐĐ", 20, 20, "ms"),
         ("Hồ sơ cho phép thành lập trường", "Sở GD&ĐT", 20, 24, "edu"),
@@ -56,7 +56,7 @@ LEGAL = [
 # (tên, bên thực hiện, tháng bắt đầu, tháng kết thúc, loại)  — loại "ms" = mốc
 LANES = [
     ("A · Pháp lý đất – đầu tư (đường găng)", [
-        ("Thành lập pháp nhân 4 nhà đầu tư", "NĐT, luật sư", 1, 2, "prep"),
+        ("Thành lập pháp nhân dự án", "NĐT, luật sư", 1, 2, "prep"),
         ("Thẩm định đất, thông tin quy hoạch", "Bộ phận ĐT", 1, 3, "crit"),
         ("Đề xuất chủ trương điều chỉnh QH 1/2000", "Sở QH-KT", 2, 4, "crit"),
         ("Ý kiến chủ trương điều chỉnh QH", "UBND TP", 4, 4, "ms"),
