@@ -3,10 +3,13 @@
 Báo cáo của Bộ phận Đầu tư trình HĐQT và nhà đầu tư thân hữu: hiện trạng khu đất, kiểm tra quy hoạch 1/2000, hành lang pháp lý 2021–2026, lộ trình pháp lý tới chấp thuận chủ trương đầu tư, các luồng phát triển song song và tiến độ Gantt.
 
 - Báo cáo (GitHub Pages): `KE_HOACH_THUC_HIEN_V1.html` (bản trùng `index.html` để mở từ link gốc)
+- Mô hình đầu tư giai đoạn xây dựng: `MO_HINH_DAU_TU_V1.html` (tổng mức đầu tư, lịch giải ngân theo Gantt, nguồn vốn, độ nhạy)
 - Dữ liệu và script dựng lại: `source/`
   - `coords.py` — bảng tọa độ VN-2000 đọc từ bản scan (P1: 40 mốc, 11.617,1 m²; P2: 33 mốc, 17.356,5 m²)
   - `make_siteplan.py` — sinh `assets/site-plan.svg`
   - `report.template.html` + `build.py` — sinh `index.html` (chèn SVG và 2 bảng Gantt; dữ liệu tiến độ nằm trong `build.py`)
+  - `verify_coords.py` — kiểm tra tọa độ bằng cột Cạnh; `p2c_local.json`, `wgs2.json` — ranh 33 mốc hiệu chỉnh (cung thật)
+  - `fin_invest.py` (giả định + tính toán) và `fin_build.py` — sinh `MO_HINH_DAU_TU_V1.html`; đơn giá gốc QĐ 425/QĐ-BXD
   - `wgs.json` — ranh đã chuyển sang WGS84 (dùng để phủ lên bản đồ quy hoạch)
 - Ảnh tra cứu quy hoạch: `assets/qh-*.jpg` (cổng thongtinquyhoach.hochiminhcity.gov.vn, 30/09/2026)
 
@@ -16,6 +19,7 @@ Báo cáo của Bộ phận Đầu tư trình HĐQT và nhà đầu tư thân h�
 cd source
 python make_siteplan.py
 python build.py
+python fin_build.py
 ```
 
 Yêu cầu: Python 3.10+ (chỉ dùng thư viện chuẩn). `pyproj` chỉ cần nếu muốn chuyển lại tọa độ sang WGS84.
