@@ -1,9 +1,9 @@
 """Sinh ../MO_HINH_DAU_TU_V1.html từ fin_invest.py (dùng lại CSS của báo cáo kế hoạch)."""
 import os, re
-from fin_invest import run, sens, A, QLAB
+from fin_invest import run, sens, A, QLAB, compare, PA_TEN
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-r = run(); S = sens(); a = r["a"]; Q = r["Q"]
+r = run(); S = sens(); a = r["a"]; Q = r["Q"]; CMP = compare()
 USD = 26278  # đ/USD, bình quân Q4/2025 (QĐ 425/QĐ-BXD)
 f1 = lambda v: f"{v:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
 f0 = lambda v: f"{v:,.0f}".replace(",", ".")
@@ -105,6 +105,14 @@ def _sr(i, n, t, e, l):
 sens_rows = "".join(_sr(i, *x) for i, x in enumerate(S))
 
 gfa = r["gfa"]
+def _cmp_row(c):
+    ok = c["md"] <= 0.40
+    cls = ' class="tr-base"' if c["pa"] == a["phuong_an"] else ''
+    tag = '<span class="tag ok">Đạt</span>' if ok else '<span class="tag no">Vượt</span>'
+    return (f'<tr{cls}><td class="td-bold">{c["ten"]}</td><td class="td-right">{f0(c["gfa"])}</td><td class="td-right">{f0(c["fp"])}</td>'
+            f'<td class="td-right">{pct(c["md"])} {tag}</td><td class="td-right">{f1(c["hs_sd"]).replace(",0","")}</td>'
+            f'<td class="td-right">{f1(c["open_hs"])}</td><td class="td-right">{f0(c["total"])}</td></tr>')
+cmp_rows = "".join(_cmp_row(c) for c in CMP)
 html = f'''<!DOCTYPE html>
 <html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mô Hình Đầu Tư — Trường Liên Cấp Tân Tạo</title>
@@ -126,7 +134,7 @@ html = f'''<!DOCTYPE html>
   <div class="sb-header"><div class="sb-logo"><div class="sb-diamond"></div><div class="sb-logo-text">Trường Liên Cấp<br>Tân Tạo</div></div>
   <div class="sb-tagline">Mô hình đầu tư giai đoạn xây dựng<br>Chuẩn quốc tế · tham chiếu SSIS</div></div>
   <div class="sb-nav"><div class="nav-label">Nội dung</div>
-    <a class="nav-item" href="#s1">1. Tóm tắt</a><a class="nav-item" href="#s2">2. Cơ sở và giả định</a>
+    <a class="nav-item" href="#s1">1. Tóm tắt</a><a class="nav-item" href="#s2">2. Cơ sở và giả định</a><a class="nav-item" href="#pa">2b. Hạng mục cho 1,7 ha</a>
     <a class="nav-item" href="#s3">3. Tổng mức đầu tư</a><a class="nav-item" href="#s4">4. Lịch giải ngân</a>
     <a class="nav-item" href="#s5">5. Nguồn vốn &amp; góp vốn</a><a class="nav-item" href="#s6">6. Độ nhạy</a>
     <a class="nav-item" href="#s7">7. Ghi chú &amp; kiến nghị</a>
@@ -138,7 +146,7 @@ html = f'''<!DOCTYPE html>
 <header class="hero">
   <div class="hero-tag"><div class="hero-tag-dot"></div><span>Tài liệu nội bộ — Mô hình đầu tư sơ bộ</span></div>
   <h1>Tổng Mức Đầu Tư &amp; Nguồn Vốn<br>Giai Đoạn Xây Dựng Cơ Sở Vật Chất</h1>
-  <p class="hero-sub">Trường liên cấp chuẩn quốc tế, tham chiếu Saigon South International School (SSIS) · {f0(r["hs"])} học sinh, 200 chỗ nội trú · Khu đất 17.356,5 m² · Giải ngân 10/2026 – 9/2030</p>
+  <p class="hero-sub">Trường liên cấp chuẩn quốc tế, tham chiếu Saigon South International School (SSIS) · {f0(r["hs"])} học sinh, 100 chỗ nội trú · Khu đất 17.356,5 m² · Giải ngân 10/2026 – 9/2030</p>
   <div class="hero-stats">
     <div class="stat-box"><div class="stat-label">Tổng mức đầu tư</div><div class="stat-value">{f0(tot)}<span class="stat-unit"> tỷ đ</span></div><div class="stat-note">≈ {f1(tot*1e9/USD/1e6)} triệu USD</div></div>
     <div class="stat-box"><div class="stat-label">Vốn chủ sở hữu</div><div class="stat-value">{f0(r["equity"])}<span class="stat-unit"> tỷ đ</span></div><div class="stat-note">{pct(r["equity"]/tot)} tổng mức đầu tư · góp 5 đợt</div></div>
@@ -167,12 +175,12 @@ html = f'''<!DOCTYPE html>
     <tbody>
       <tr><td class="td-bold">Diện tích khuôn viên</td><td>Khoảng 6 ha</td><td>Khoảng 1,7 ha (16.800 m² sử dụng)</td></tr>
       <tr><td class="td-bold">Học sinh</td><td>Trên 1.500 (mầm non – lớp 12)</td><td>{f0(r["hs"])} (tiểu học {A["hs"]["Tiểu học"]}, THCS {A["hs"]["THCS"]}, THPT {A["hs"]["THPT"]}); 48 lớp, sĩ số khoảng 22</td></tr>
-      <tr><td class="td-bold">Thể thao</td><td>2 nhà thi đấu có điều hòa, bể bơi 6 làn, 3 sân bóng</td><td>Nhà thi đấu 2 sân, bể bơi trong nhà 25 m × 6 làn, sân bóng mini</td></tr>
-      <tr><td class="td-bold">Học thuật</td><td>Trung tâm STEAM 7.100 m², 3 thư viện, nhà hát</td><td>Trung tâm STEAM – thư viện 3.000 m², hội trường – nhà hát 500 chỗ</td></tr>
-      <tr><td class="td-bold">Nội trú</td><td>—</td><td>200 giường (khối nhà ngủ nhóm F1.1)</td></tr>
-      <tr><td class="td-bold">Tổ chức không gian</td><td>Khuôn viên rộng, thấp tầng</td><td>Khuôn viên nén, 4–5 tầng, 1 tầng hầm; khoảng {f0(gfa)} m² sàn, khoảng 21 m² sàn/HS</td></tr>
+      <tr><td class="td-bold">Thể thao</td><td>2 nhà thi đấu có điều hòa, bể bơi 6 làn, 3 sân bóng</td><td>Khối thể thao – sự kiện xếp chồng: bể bơi trong nhà 25 m × 4 làn ở tầng 1, nhà đa năng 1 sân kiêm hội trường 600 chỗ ở tầng 2; sân thể thao trên mái; sân bóng mini 5 người</td></tr>
+      <tr><td class="td-bold">Học thuật</td><td>Trung tâm STEAM 7.100 m², 3 thư viện, nhà hát</td><td>STEAM, phòng thí nghiệm, thư viện tích hợp trong khối học tập 12.000 m²; hội trường dùng chung với nhà đa năng</td></tr>
+      <tr><td class="td-bold">Nội trú</td><td>—</td><td>100 giường, giai đoạn 2 (khối nhà ngủ nhóm F1.1)</td></tr>
+      <tr><td class="td-bold">Tổ chức không gian</td><td>Khuôn viên rộng, thấp tầng</td><td>Khuôn viên nén, 5 tầng, 1 tầng hầm; khoảng {f0(gfa)} m² sàn nổi (khoảng {f0(gfa/r["hs"])} m² sàn/HS), mật độ xây dựng {pct(r["fp"]/a["dat_m2"])}</td></tr>
     </tbody></table></div>
-  <p class="note-sm" style="font-size:13.5px;color:var(--ink-soft)">Khu đất nhỏ bằng khoảng 1/3,5 SSIS nên quy mô học sinh được giảm để giữ chất lượng không gian; chỉ tiêu đề xuất khi điều chỉnh quy hoạch cần hệ số sử dụng đất khoảng 1,4–1,6.</p></div>
+  <p class="note-sm" style="font-size:13.5px;color:var(--ink-soft)">Khu đất nhỏ bằng khoảng 1/3,5 SSIS nên quy mô học sinh được giảm để giữ chất lượng không gian; phương án B cần hệ số sử dụng đất khoảng 1,1 và mật độ khoảng 32%, còn dư địa so với chỉ tiêu đề xuất (mật độ ≤ 40%, hệ số ≤ 1,6).</p></div>
   <div class="subsec"><h3 class="subsec-title">Giả định chính</h3>
   <div class="tbl-wrap"><table>
     <thead><tr><th>Giả định</th><th>Giá trị</th><th>Căn cứ</th></tr></thead><tbody>
@@ -184,6 +192,24 @@ html = f'''<!DOCTYPE html>
       <tr><td class="td-bold">Vốn vay</td><td>{pct(a["ty_le_vay_xd"])} phần xây dựng, thiết bị, chi phí khác, dự phòng; lãi {pct(a["lai_suat"])}/năm</td><td>Giải ngân theo tiến độ thi công; lãi trong thời gian xây dựng được vốn hóa</td></tr>
       <tr><td class="td-bold">Tỷ giá</td><td>{f0(USD)} đ/USD</td><td>Bình quân Q4/2025 theo QĐ 425/QĐ-BXD</td></tr>
     </tbody></table></div></div>
+</section>
+
+<section class="section" id="pa">
+  <div class="sec-header"><div class="sec-num">2b</div><div><div class="sec-label">Phần 2b</div><h2 class="sec-title">Hạng Mục Phù Hợp Khu Đất 1,7 Ha</h2></div></div>
+  <p>Khu đất chỉ bằng khoảng 1/3,5 khuôn viên SSIS. Nếu bố trí đủ các khối riêng như SSIS (nhà hát, nhà thi đấu 2 sân, bể bơi, sân bóng), riêng diện tích chiếm đất đã vượt xa mật độ xây dựng cho phép. Bộ phận Đầu tư so sánh ba phương án trên cùng quy mô {f0(r["hs"])} học sinh và 16.800 m² đất sử dụng:</p>
+  <div class="tbl-wrap"><table class="tbl-compare">
+    <thead><tr><th>Phương án</th><th class="td-right">m² sàn nổi</th><th class="td-right">m² chiếm đất</th><th class="td-right">Mật độ XD (≤ 40%)</th><th class="td-right">Hệ số SDĐ</th><th class="td-right">Đất trống m²/HS</th><th class="td-right">TMĐT (tỷ đ)</th></tr></thead>
+    <tbody>{cmp_rows}</tbody></table></div>
+  <div class="card-grid three">
+    <div class="card coral"><div class="card-kicker">Phương án A</div><div class="card-title">Không đặt vừa khu đất</div><p>Các khối một tầng (nhà hát, nhà thi đấu 2 sân, bể bơi) chiếm khoảng 5.000 m² đất. Mật độ khoảng 57%, chỉ còn khoảng 6,8 m² đất trống cho mỗi học sinh.</p></div>
+    <div class="card teal"><div class="card-kicker">Phương án B · khuyến nghị</div><div class="card-title">Giữ tiện ích cốt lõi, nén theo chiều cao</div><ul>
+      <li>Bể bơi ở tầng 1, nhà đa năng kiêm hội trường ở tầng 2 trong cùng một khối</li>
+      <li>STEAM, thư viện tích hợp trong khối học tập 5 tầng</li>
+      <li>Sân thể thao trên mái khối học tập</li>
+      <li>Nội trú 100 giường ở giai đoạn 2</li></ul></div>
+    <div class="card deep"><div class="card-kicker">Phương án C</div><div class="card-title">Tinh gọn, chi phí thấp nhất</div><p>Bỏ bể bơi và nội trú, chỉ giữ nhà đa năng. Rẻ hơn B khoảng {f0(CMP[1]["total"]-CMP[2]["total"])} tỷ đồng, nhưng thiếu hai tiện ích mà phụ huynh phân khúc quốc tế thường đòi hỏi.</p></div>
+  </div>
+  <div class="note"><p><strong>Hướng bù đắp diện tích:</strong> phần còn lại của ô công viên II.X1 (khoảng 2,6 ha, chức năng công viên – cây xanh – thể dục thể thao) nằm liền kề. Có thể nghiên cứu phương án nhà trường đầu tư hoặc khai thác sân thể thao công cộng trong công viên theo hình thức xã hội hóa: học sinh dùng trong giờ học, cộng đồng dùng ngoài giờ. Phương án này còn hỗ trợ luận cứ “bù cây xanh, phục vụ cộng đồng” trong hồ sơ điều chỉnh quy hoạch. Cơ chế cụ thể cần làm rõ với UBND phường theo quy định hiện hành về quản lý công viên.</p></div>
 </section>
 
 <section class="section" id="s3">
@@ -248,7 +274,7 @@ html = f'''<!DOCTYPE html>
   <ul class="bullet-list">
     <li><span><strong>Chưa gồm:</strong> chi phí trước khai giảng (tuyển dụng, đào tạo, marketing), vốn lưu động, tiền thuê đất nếu không được miễn, chi phí đền bù ngoài giá thỏa thuận.</span></li>
     <li><span><strong>Mức chính xác:</strong> sơ bộ, khoảng ±20%. Dùng để quyết định chủ trương và kế hoạch góp vốn; thay bằng tổng mức đầu tư trong báo cáo nghiên cứu khả thi khi có thiết kế cơ sở.</span></li>
-    <li><span><strong>Kiến nghị:</strong> HĐQT thông qua đợt 1 (khoảng {f1(dot(0,2))} tỷ đồng); giao Bộ Phận Đầu tư khảo sát giá đất thỏa thuận và mời 2–3 đơn vị tư vấn lập ý tưởng và dự toán sơ bộ trước Q2/2027.</span></li>
+    <li><span><strong>Kiến nghị:</strong> HĐQT thông qua đợt 1 (khoảng {f1(dot(0,2))} tỷ đồng); giao Bộ phận Đầu tư khảo sát giá đất thỏa thuận và mời 2–3 đơn vị tư vấn lập ý tưởng và dự toán sơ bộ trước Q2/2027.</span></li>
   </ul>
   <footer class="doc-foot">Mô hình tính bằng mã nguồn trong thư mục source/ (fin_invest.py). Các giả định ở Phần 2 có thể thay đổi để cập nhật toàn bộ số liệu. Bộ phận Đầu tư · Phiên bản V1 · 30/09/2026.</footer>
 </section>

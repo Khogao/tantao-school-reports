@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 A = {
     # --- quy mô ---
     "hs": {"Tiểu học": 440, "THCS": 352, "THPT": 264},     # 48 lớp × ~22 HS
-    "lop": 48, "giuong_kt": 200,
+    "lop": 48, "phuong_an": "B",
     "dat_m2": 16800,              # diện tích sử dụng (ranh giao–thuê trừ lộ giới, hành lang)
     # --- hệ số ---
     "K_qt": 2.0,                  # hệ số nâng từ chuẩn mức độ 2 (BXD) lên chuẩn quốc tế
@@ -22,26 +22,49 @@ A = {
     # --- chi phí khác ---
     "khac_pct": 0.10,             # QLDA, tư vấn thiết kế–giám sát, thẩm tra, bảo hiểm, chi phí khác
     "dp_pct": 0.05,               # dự phòng khối lượng
-    "tb_chuyen_dung": 60.0,       # triệu đ/HS: lab, CNTT 1:1, AV, thư viện, nội thất, sân khấu
+    "tb_chuyen_dung": 60.0,       # triệu đ/HS: lab, CNTT 1:1, AV, thư viện, nội thất
     # --- nguồn vốn ---
     "ty_le_vay_xd": 0.55,         # vay trên phần xây dựng + thiết bị + khác + dự phòng
     "lai_suat": 0.09,
 }
 
-# Hạng mục: (tên, khối lượng, đơn vị, đơn giá BXD 2025 triệu đ, mã BXD, K áp dụng, nhóm, giai đoạn)
-def items(a):
-    K = a["K_qt"]
-    return [
-        ("Khối học tập, phòng bộ môn (4–5 tầng, 1 hầm)", 9000, "m² sàn", 9.898 + 1.104, "11213.10", K, "XD", 1),
-        ("Trung tâm STEAM, thư viện, media", 3000, "m² sàn", 8.753 + 1.277, "11213.09", K, "XD", 1),
-        ("Hành chính, y tế, nhà ăn – bếp", 2500, "m² sàn", 7.433 + 0.850, "11213.07", K * 0.9, "XD", 1),
-        ("Hội trường – nhà hát 500 chỗ", 500, "chỗ", 35.102, "11241.01", 1.3, "XD", 2),
-        ("Nhà thi đấu đa năng 2 sân", 1600, "m² sân", 6.474, "11232.03", 1.4, "XD", 2),
-        ("Bể bơi trong nhà 25 m × 6 làn", 325, "m² mặt bể", 18.701, "11233.05", 1.5, "XD", 2),
-        ("Khu nội trú 200 giường", 3000, "m² sàn", 9.202, "11110.01", 1.3, "XD", 2),
-        ("Sân bóng mini, sân thể thao ngoài trời", 2600, "m² sân", 1.151, "11232.01", 1.5, "XD", 2),
-        ("Hạ tầng kỹ thuật, cảnh quan, cổng rào", 9000, "m² đất", 1.5, "ước tính", 1.0, "XD", 3),
-    ]
+# Hạng mục: (tên, khối lượng, đơn vị, đơn giá BXD 2025 triệu đ, mã BXD, K, giai đoạn, m² sàn, m² chiếm đất)
+PA_TEN = {"A": "A · Đầy đủ như SSIS", "B": "B · Nén, xếp chồng (khuyến nghị)", "C": "C · Tinh gọn"}
+def items(a, pa=None):
+    K = a["K_qt"]; pa = pa or a["phuong_an"]
+    if pa == "A":
+        L = [
+            ("Khối học tập, phòng bộ môn (5 tầng, 1 hầm)", 9000, "m² sàn", 9.898 + 1.104, "11213.10", K, 1, 9000, 1800),
+            ("Trung tâm STEAM, thư viện, media (3 tầng)", 3000, "m² sàn", 8.753 + 1.277, "11213.09", K, 1, 3000, 1000),
+            ("Hành chính, y tế, nhà ăn – bếp (2 tầng)", 2500, "m² sàn", 7.433 + 0.850, "11213.07", K * 0.9, 1, 2500, 1250),
+            ("Hội trường – nhà hát 500 chỗ (khối riêng)", 500, "chỗ", 35.102, "11241.01", 1.3, 2, 1800, 1800),
+            ("Nhà thi đấu 2 sân (khối riêng)", 1600, "m² sân", 6.474, "11232.03", 1.4, 2, 2000, 2000),
+            ("Bể bơi trong nhà 25 m × 6 làn (khối riêng)", 325, "m² mặt bể", 18.701, "11233.05", 1.5, 2, 1200, 1200),
+            ("Khu nội trú 200 giường (5 tầng)", 3000, "m² sàn", 9.202, "11110.01", 1.3, 2, 3000, 600),
+            ("Sân bóng mini, sân thể thao ngoài trời", 2600, "m² sân", 1.151, "11232.01", 1.5, 2, 0, 0),
+        ]
+    elif pa == "B":
+        L = [
+            ("Khối học tập tích hợp STEAM, thư viện (5 tầng, 1 hầm)", 12000, "m² sàn", 9.898 + 1.104, "11213.10", K, 1, 12000, 2400),
+            ("Hành chính, y tế, nhà ăn – bếp (2 tầng, nối khối học tập)", 1800, "m² sàn", 7.433 + 0.850, "11213.07", K * 0.9, 1, 1800, 900),
+            ("Khối thể thao – sự kiện: bể bơi 25 m × 4 làn (tầng 1)", 250, "m² mặt bể", 18.701, "11233.05", 1.5, 2, 1600, 1800),
+            ("Khối thể thao – sự kiện: nhà đa năng 1 sân kiêm hội trường 600 chỗ (tầng 2)", 1000, "m² sân", 6.474, "11232.03", 1.6, 2, 1800, 0),
+            ("Sân khấu, âm thanh, ghế khán đài di động 600 chỗ", 1, "trọn gói", 8000, "ước tính", 1.0, 2, 0, 0),
+            ("Sân thể thao trên mái khối học tập", 1500, "m² sân", 3.0, "ước tính", 1.0, 2, 0, 0),
+            ("Khu nội trú 100 giường (5 tầng, giai đoạn 2)", 1500, "m² sàn", 9.202, "11110.01", 1.3, 2, 1500, 300),
+            ("Sân bóng mini 5 người, sân chơi ngoài trời", 1200, "m² sân", 1.151, "11232.01", 1.5, 2, 0, 0),
+        ]
+    else:
+        L = [
+            ("Khối học tập tích hợp STEAM, thư viện (5 tầng, 1 hầm)", 11000, "m² sàn", 9.898 + 1.104, "11213.10", K, 1, 11000, 2200),
+            ("Hành chính, y tế, nhà ăn – bếp (2 tầng)", 1500, "m² sàn", 7.433 + 0.850, "11213.07", K * 0.9, 1, 1500, 750),
+            ("Nhà đa năng 1 sân kiêm hội trường", 1000, "m² sân", 6.474, "11232.03", 1.4, 2, 1500, 1500),
+            ("Sân thể thao trên mái khối học tập", 1500, "m² sân", 3.0, "ước tính", 1.0, 2, 0, 0),
+            ("Sân bóng mini 5 người, sân chơi ngoài trời", 1200, "m² sân", 1.151, "11232.01", 1.5, 2, 0, 0),
+        ]
+    fp = sum(x[8] for x in L)
+    L.append(("Hạ tầng kỹ thuật, cảnh quan, cổng rào", a["dat_m2"] - fp, "m² đất", 1.5, "ước tính", 1.0, 3, 0, 0))
+    return L
 
 def month_to_q(m):  # T1 = 10/2026 → quý 1 = Q4/2026
     return (m - 1) // 3
@@ -60,10 +83,10 @@ def run(a=None):
     a = deepcopy(a or A)
     hs = sum(a["hs"].values())
     rows = []
-    for n, qty, unit, dg, code, k, grp, ph in items(a):
+    for n, qty, unit, dg, code, k, ph, gfa, fp in items(a):
         base = qty * dg / 1000
         val = base * k * a["K_tg"]
-        rows.append(dict(ten=n, qty=qty, unit=unit, dg=dg, code=code, k=k, base=base, val=val, ph=ph))
+        rows.append(dict(ten=n, qty=qty, unit=unit, dg=dg, code=code, k=k, base=base, val=val, ph=ph, gfa=gfa, fp=fp))
     xd = {1: 0, 2: 0, 3: 0}
     for r in rows: xd[r["ph"]] += r["val"]
     xd_total = sum(xd.values())
@@ -102,7 +125,16 @@ def run(a=None):
         q["tong"] = q["dat"] + q["xd"] + q["tb"] + q["khac"]; cum += q["tong"]; q["luy_ke"] = cum
     return dict(a=a, hs=hs, rows=rows, xd=xd, xd_total=xd_total, tb=tb, khac=khac, dp=dp, dat=dat,
                 dat_phi=dat_phi, lai=idc, loan=loan_total, equity=equity, total=total, Q=Q,
-                gfa=sum(r["qty"] for r in rows if r["unit"] == "m² sàn") + 1800 + 2000 + 1200)
+                gfa=sum(x["gfa"] for x in rows), fp=sum(x["fp"] for x in rows))
+
+def compare():
+    out = []
+    for pa in ("A", "B", "C"):
+        b = deepcopy(A); b["phuong_an"] = pa; r = run(b)
+        out.append(dict(pa=pa, ten=PA_TEN[pa], gfa=r["gfa"], fp=r["fp"], md=r["fp"] / A["dat_m2"],
+                        hs_sd=r["gfa"] / A["dat_m2"], open_hs=(A["dat_m2"] - r["fp"]) / r["hs"],
+                        xd=r["xd_total"], total=r["total"], rows=r["rows"]))
+    return out
 
 def sens():
     out = []
@@ -125,3 +157,4 @@ if __name__ == "__main__":
     for x in r["rows"]: print(f"  {x['ten']}: {x['val']:.1f}")
     for i, q in enumerate(r["Q"]): print(QLAB[i], round(q["tong"], 1), round(q["csh"], 1), round(q["vay"], 1), round(q["luy_ke"], 1))
     for s in sens(): print(s[0], round(s[1], 1), round(s[2], 1), round(s[3], 1))
+    for c in compare(): print(c["ten"], "GFA", c["gfa"], "fp", c["fp"], "MĐXD", round(c["md"]*100), "% HSSDĐ", round(c["hs_sd"],2), "open/HS", round(c["open_hs"],1), "XD", round(c["xd"],1), "TMĐT", round(c["total"],1))
